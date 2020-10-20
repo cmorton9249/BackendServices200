@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibraryApi.Models.Reservations;
+using System;
 
 namespace LibraryApi.Domain
 {
@@ -8,5 +9,6 @@ namespace LibraryApi.Domain
 		public string For { get; set; }
 		public string Items { get; set; }
 		public DateTime? AvailableOn { get; set; }
+		public ReservationStatus Status { get; set; }
 	}
 }

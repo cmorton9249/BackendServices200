@@ -32,8 +32,9 @@ namespace LibraryApi.Controllers
 			_context.Reservations.Add(reservation);
 			await _context.SaveChangesAsync();
 			var response = _mapper.Map<ReservationDetailsResponse>(reservation);
-			await Task.Delay(response.Items.Split(',').Count() * 1000);
-			response.AvailableOn = DateTime.Now.AddDays(1);
+			response.Status = ReservationStatus.Pending;
+			//await Task.Delay(response.Items.Split(',').Count() * 1000);
+			//response.AvailableOn = DateTime.Now.AddDays(1);
 			return CreatedAtRoute("reservations#getbyId", new { id = response.Id }, response);
 		}
 
