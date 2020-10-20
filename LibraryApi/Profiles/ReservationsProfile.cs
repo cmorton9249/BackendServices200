@@ -10,6 +10,7 @@ namespace LibraryApi.Profiles
 		{
 			CreateMap<Reservation, ReservationDetailsResponse>();
 			CreateMap<PostReservationRequest, Reservation>();
+
 		}
 	}
 }
