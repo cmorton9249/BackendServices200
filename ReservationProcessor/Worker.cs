@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,18 +8,20 @@ using ReservationProcessor.Utils;
 
 namespace ReservationProcessor
 {
-    public class Worker : BackgroundService
+	public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
         private readonly ConsumerConfig _config;
+        private readonly ReservationHttpService _httpService;
 
-        public Worker(ILogger<Worker> logger, ConsumerConfig config)
-        {
-            _logger = logger;
-            _config = config;
-        }
+		public Worker(ILogger<Worker> logger, ConsumerConfig config, ReservationHttpService httpService)
+		{
+			_logger = logger;
+			_config = config;
+			_httpService = httpService;
+		}
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var consumerHelper = new ConsumerWrapper("libraryreservations", _config);
             _logger.LogInformation("The Service is running and waiting for reservations");
@@ -29,6 +29,20 @@ namespace ReservationProcessor
             {
                 var order = consumerHelper.ReadMessage<ReservationMessage>();
                 _logger.LogInformation($"Got a reservation for {order.For} for the items {order.Items}");
+
+                var numberOfItems = order.Items.Split(',').Count();
+                await Task.Delay(1000 * numberOfItems);
+                if (numberOfItems %2 == 0)
+				{
+                    await _httpService.MarkReservationAccepted(order);
+                    _logger.LogInformation("\tApproved that order.");
+				} else
+				{
+                    await _httpService.MarkReservationRejected(order);
+                    _logger.LogInformation("\tRejected that order.");
+
+                }
+
             }
             
         }

@@ -22,6 +22,7 @@ namespace ReservationProcessor
                 {
                     var consumerConfig = new ConsumerConfig();
                     hostContext.Configuration.Bind("kafka", consumerConfig);
+                    services.AddHttpClient<ReservationHttpService>();
                     services.AddSingleton<ConsumerConfig>(consumerConfig);
                     services.AddHostedService<Worker>();
                 });
